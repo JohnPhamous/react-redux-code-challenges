@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setSearchInput, selectInput } from "./searchBarSlice";
 import { setWordList } from "../wordList/wordListSlice";
 
+export const getWordList = async (endpoint) => {
+  const response = await fetch(endpoint, { cache: "no-cache" });
+
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  }
+};
+
 const SearchBar = () => {
+  const [error, setError] = useState(null);
   const input = useSelector(selectInput);
   const dispatch = useDispatch();
 
@@ -12,41 +22,23 @@ const SearchBar = () => {
     dispatch(setSearchInput(e.target.value));
   };
 
-  const getWordList = async (endpoint) => {
-    try {
-      const response = await fetch(endpoint, { cache: "no-cache" });
-
-      if (response.ok) {
-        const jsonResponse = await response.json();
-        return jsonResponse;
-      }
-    } catch (error) {
-      throw new Error("Sorry, your request was unsuccessful.");
-    }
-  };
-
   const handleSubmit = async () => {
+    setError(null);
     const url = "https://api.datamuse.com/words?";
-    const queryParams = "ml=";
-    const queryString = input.replace(/\s/g, "+");
-    const endpoint = `${url}${queryParams}${queryString}`;
+    const queryParams = "max=10&ml=";
+    const endpoint = `${url}${queryParams}${encodeURIComponent(input)}`;
 
-    const apiResponse = await getWordList(endpoint);
-
-    let wordListToRender = [];
-
-    if (apiResponse.length > 10) {
-      const firstTenWords = apiResponse.slice(0, 9);
-      wordListToRender = firstTenWords;
-    } else {
-      wordListToRender = apiResponse;
+    try {
+      const words = await getWordList(endpoint);
+      dispatch(setWordList(words));
+    } catch (e) {
+      setError(e.message);
     }
-
-    dispatch(setWordList(wordListToRender));
   };
 
   return (
     <div>
+      {error !== null && <p>{error}</p>}
       <form
         onSubmit={(e) => {
           e.preventDefault();

@@ -1,20 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 export const wordListSlice = createSlice({
-  name: 'wordList',
+  name: "wordList",
   initialState: {
-    value: []
+    value: [],
   },
   reducers: {
     setWordList: (state, action) => {
-      console.log('boba')
-      state.value = action.payload
-    }
-  }
-})
+      state.value = action.payload;
+    },
+  },
+});
 
-export const { setWordList } = wordListSlice.actions
+export const { setWordList } = wordListSlice.actions;
 
-export const selectWordList = (state) => state.wordList.value
+export const selectWordList = (state) => state.wordList.value;
 
-export default wordListSlice.reducer
+export default wordListSlice.reducer;
