@@ -38,7 +38,7 @@ const SearchBar = () => {
 
   return (
     <div>
-      {error !== null && <p>{error}</p>}
+      {error !== null && <p data-testid="error-message">{error}</p>}
       <form
         onSubmit={(e) => {
           e.preventDefault();

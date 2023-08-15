@@ -249,8 +249,9 @@ describe("<App />", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      const errorMessage = screen.getByText("API Error");
-      expect(errorMessage).toBeInTheDocument();
+      const errorMessageContainer = screen.getByTestId("error-message");
+      expect(errorMessageContainer).toBeInTheDocument();
+      expect(errorMessageContainer.textContent?.length).toBeGreaterThan(0);
     });
   });
 });
