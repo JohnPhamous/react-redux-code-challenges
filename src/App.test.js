@@ -45,61 +45,66 @@ describe("<App />", () => {
   });
 
   it("should allow a user to type in a word and start a search", async () => {
-    const mockFetch = jest.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: jest.fn().mockResolvedValue([
-        {
-          word: "lily-white",
-          score: 40023443,
-          tags: ["syn", "adj", "results_type:primary_rel"],
-        },
-        {
-          word: "whiteness",
-          score: 40023139,
-          tags: ["syn", "n"],
-        },
-        {
-          word: "whiten",
-          score: 40022066,
-          tags: ["syn", "v", "n", "prop"],
-        },
-        {
-          word: "snowy",
-          score: 40016788,
-          tags: ["syn", "adj", "n"],
-        },
-        {
-          word: "white-hot",
-          score: 40010953,
-          tags: ["syn", "adj"],
-        },
-        {
-          word: "hot",
-          score: 40008966,
-          tags: ["syn", "adj", "adv", "v", "n"],
-        },
-        {
-          word: "colorless",
-          score: 40003341,
-          tags: ["syn", "adj"],
-        },
-        {
-          word: "achromatic",
-          score: 39996509,
-          tags: ["syn", "adj", "ant"],
-        },
-        {
-          word: "light",
-          score: 39984498,
-          tags: ["syn", "n", "adj", "v", "adv"],
-        },
-        {
-          word: "covered",
-          score: 39981436,
-          tags: ["syn", "adj"],
-        },
-      ]),
-    });
+    const mockFetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve([
+            {
+              word: "lily-white",
+              score: 40023443,
+              tags: ["syn", "adj", "results_type:primary_rel"],
+            },
+            {
+              word: "whiteness",
+              score: 40023139,
+              tags: ["syn", "n"],
+            },
+            {
+              word: "whiten",
+              score: 40022066,
+              tags: ["syn", "v", "n", "prop"],
+            },
+            {
+              word: "snowy",
+              score: 40016788,
+              tags: ["syn", "adj", "n"],
+            },
+            {
+              word: "white-hot",
+              score: 40010953,
+              tags: ["syn", "adj"],
+            },
+            {
+              word: "hot",
+              score: 40008966,
+              tags: ["syn", "adj", "adv", "v", "n"],
+            },
+            {
+              word: "colorless",
+              score: 40003341,
+              tags: ["syn", "adj"],
+            },
+            {
+              word: "achromatic",
+              score: 39996509,
+              tags: ["syn", "adj", "ant"],
+            },
+            {
+              word: "light",
+              score: 39984498,
+              tags: ["syn", "n", "adj", "v", "adv"],
+            },
+            {
+              word: "covered",
+              score: 39981436,
+              tags: ["syn", "adj"],
+            },
+          ]),
+      })
+    );
+
+    global.fetch = mockFetch;
 
     const { rerender } = render(
       <Provider store={store}>
@@ -190,10 +195,14 @@ describe("<App />", () => {
         tags: ["syn", "adj"],
       },
     ];
-    jest.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: jest.fn().mockResolvedValue(mockWords),
-    });
+    const mockFetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockWords),
+      })
+    );
+
+    global.fetch = mockFetch;
 
     const { rerender } = render(
       <Provider store={store}>
@@ -234,10 +243,14 @@ describe("<App />", () => {
   });
 
   it("should throw an error if getting the synonyms fails", async () => {
-    jest.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: jest.fn().mockRejectedValue(new Error("API Error")),
-    });
+    const mockFetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.reject(new Error("API Error")),
+      })
+    );
+
+    global.fetch = mockFetch;
 
     render(
       <Provider store={store}>
